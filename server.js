@@ -1,9 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const cors = require('cors');
+
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const app = express();
+
+app.use(cors());
 app.use(bodyParser.json());
 
 const database = {
@@ -41,7 +46,7 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
 	if (req.body.email === database.users[0].email && 
 		req.body.password === database.users[0].password) {
-		res.json('Successful Login.');
+		res.json(database.users[0]);
 	} else {
 		res.status(400).json('error logging in');
 	}
@@ -50,15 +55,14 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
 	const { email, name, password } = req.body;
 
-	bcrypt.hash(password, saltRounds, function(err, hash) {
-		console.log(hash);
-	});
+	// bcrypt.hash(password, saltRounds, function(err, hash) {
+	// 	console.log(hash);
+	// });
 
 	database.users.push({
 		id: '100',
 		name: name,
 		email: email,
-		password: password,
 		entries: 0,
 		joined: new Date()
 	})
@@ -107,12 +111,6 @@ app.put('/image', (req, res) => {
 // bcrypt.compare("veggies", hash, function(err, res) {
 // 	// res == false
 // });
-
-
-
-
-
-
 
 
 app.listen(3000, () => {
